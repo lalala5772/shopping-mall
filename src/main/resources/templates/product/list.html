@@ -11,7 +11,7 @@
     </div>
 
     <div class="filter-bar">
-        <a th:href="@{/products}" class="filter-chip" th:classappend="${selectedCategory == null} ? ' active'">전체</a>
+        <a th:href="@{/products}" class="filter-chip" th:classappend="${selectedCategory == null and imageSearchActive == null} ? ' active'">전체</a>
         <a th:each="category : ${categories}"
            th:href="@{/products(category=${category.id})}"
            class="filter-chip"
@@ -22,6 +22,16 @@
             <input type="text" name="keyword" th:value="${keyword}" placeholder="상품명 검색">
             <button type="submit" class="btn btn-sm btn-outline">검색</button>
         </form>
+
+        <form th:if="${imageSearchEnabled}" th:action="@{/products/search/image}" method="post"
+              enctype="multipart/form-data" class="search-form" style="gap:0.4rem;">
+            <input type="file" name="image" accept="image/*" required style="max-width:180px;">
+            <button type="submit" class="btn btn-sm btn-outline">이미지로 검색</button>
+        </form>
+    </div>
+
+    <div th:if="${imageSearchActive}" class="alert" style="background:#f2f2f2; color:#333;">
+        업로드한 이미지와 유사한 상품 결과입니다. <a th:href="@{/products}">전체 상품 보기</a>
     </div>
 
     <div th:if="${#lists.isEmpty(products)}" class="empty-state">조건에 맞는 상품이 없습니다.</div>

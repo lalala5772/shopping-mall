@@ -45,6 +45,13 @@ app:
   delivery-tracking:
     # 스마트택배(SmartParcel/Sweettracker) 배송조회 API 키. 마찬가지로 없으면 배송조회 기능만 비활성화.
     api-key: ""
+  bedrock:
+    # AWS Bedrock Amazon Nova Multimodal Embeddings 기반 이미지 유사도 검색. 기본은 비활성화 -
+    # true로 켜려면 Bedrock 콘솔(반드시 us-east-1 리전)에서 해당 모델 액세스를 활성화하고,
+    # 이 인스턴스가 bedrock:InvokeModel 권한을 가진 자격증명(권장: EC2 IAM 역할)으로 실행돼야 한다.
+    # 꺼져 있으면 이미지 검색 UI 자체가 숨겨진다. Nova는 In-Region 전용이라 region 값을 바꾸면 안 된다.
+    enabled: false
+    region: us-east-1
 
 ---
 # 로컬 개발 프로필: docker-compose의 mysql 컨테이너(로컬 포트 3306) 또는 로컬 설치 MySQL 사용

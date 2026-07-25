@@ -1,5 +1,6 @@
 package com.mondaycloset.shop.web.controller.admin;
 
+import com.mondaycloset.shop.service.BedrockImageEmbeddingService;
 import com.mondaycloset.shop.service.CategoryService;
 import com.mondaycloset.shop.service.admin.AdminProductService;
 import com.mondaycloset.shop.web.dto.ProductDtos.ProductForm;
@@ -25,6 +26,7 @@ public class AdminProductController {
 
     private final AdminProductService adminProductService;
     private final CategoryService categoryService;
+    private final BedrockImageEmbeddingService embeddingService;
 
     @GetMapping("/admin/products")
     public String list(@RequestParam(defaultValue = "0") int page, Model model) {
@@ -32,6 +34,7 @@ public class AdminProductController {
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("imageSearchEnabled", embeddingService.isEnabled());
         return "admin/product-list";
     }
 
@@ -57,7 +60,8 @@ public class AdminProductController {
             model.addAttribute("categories", categoryService.getAllOrdered());
             return "admin/product-form";
         }
-        adminProductService.create(form);
+        Long productId = adminProductService.create(form);
+        adminProductService.embedProductImage(productId);
         redirectAttributes.addFlashAttribute("successMessage", "상품이 등록되었습니다.");
         return "redirect:/admin/products";
     }
@@ -72,7 +76,16 @@ public class AdminProductController {
             return "admin/product-form";
         }
         adminProductService.update(id, form);
+        adminProductService.embedProductImage(id);
         redirectAttributes.addFlashAttribute("successMessage", "상품이 수정되었습니다.");
+        return "redirect:/admin/products";
+    }
+
+    @PostMapping("/admin/products/backfill-embeddings")
+    public String backfillEmbeddings(RedirectAttributes redirectAttributes) {
+        int count = adminProductService.backfillEmbeddings();
+        redirectAttributes.addFlashAttribute("successMessage",
+                count + "개 상품의 이미지 검색용 임베딩을 새로 계산했습니다.");
         return "redirect:/admin/products";
     }
 

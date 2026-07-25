@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS product (
     status          VARCHAR(20)   NOT NULL DEFAULT 'ON_SALE',
     view_count      INT           NOT NULL DEFAULT 0,
     version         BIGINT        NOT NULL DEFAULT 0,
+    image_embedding LONGTEXT      NULL,
     created_at      DATETIME      NOT NULL,
     updated_at      DATETIME      NOT NULL,
     CONSTRAINT fk_product_category FOREIGN KEY (category_id) REFERENCES category(category_id),
@@ -139,6 +140,18 @@ SET @stmt = (SELECT IF(
     (SELECT COUNT(*) FROM information_schema.COLUMNS
      WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'carrier_code') = 0,
     "ALTER TABLE orders ADD COLUMN carrier_code VARCHAR(20) NULL, ADD COLUMN tracking_number VARCHAR(50) NULL",
+    'SELECT 1'
+));
+PREPARE stmt FROM @stmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- 이미지 유사도 검색: AWS Bedrock Amazon Nova Multimodal Embeddings 결과(JSON 배열 문자열)를 저장한다.
+-- 상품 카탈로그가 작아(수십~수백 개) 별도 벡터DB 없이 애플리케이션에서 코사인 유사도를 직접 계산한다.
+SET @stmt = (SELECT IF(
+    (SELECT COUNT(*) FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'product' AND COLUMN_NAME = 'image_embedding') = 0,
+    "ALTER TABLE product ADD COLUMN image_embedding LONGTEXT NULL",
     'SELECT 1'
 ));
 PREPARE stmt FROM @stmt;

@@ -41,6 +41,10 @@ dependencies {
 	// Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	// 이미지 유사도 검색: AWS Bedrock Titan 멀티모달 임베딩 호출
+	implementation platform('software.amazon.awssdk:bom:2.28.11')
+	implementation 'software.amazon.awssdk:bedrockruntime'
+
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

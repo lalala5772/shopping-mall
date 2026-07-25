@@ -68,6 +68,11 @@ public class Product extends BaseTimeEntity {
     @Column(nullable = false)
     private Long version;
 
+    /** AWS Bedrock Amazon Nova Multimodal Embeddings 결과(JSON 배열 문자열). 이미지 유사도 검색에만 쓰인다. */
+    @Lob
+    @Column(name = "image_embedding")
+    private String imageEmbedding;
+
     @Builder
     private Product(Category category, String name, int price, String description,
                      String thumbnailUrl, int stockQuantity) {
@@ -94,6 +99,11 @@ public class Product extends BaseTimeEntity {
 
     public void increaseViewCount() {
         this.viewCount++;
+    }
+
+    /** 이미지 유사도 검색용 임베딩 갱신. 상품 저장과는 별도 트랜잭션에서 계산 후 호출된다(외부 API 호출을 상품 저장 트랜잭션 밖으로 분리). */
+    public void updateImageEmbedding(String imageEmbedding) {
+        this.imageEmbedding = imageEmbedding;
     }
 
     /** 주문 시 재고 차감. @Version 낙관적 락으로 동시 주문에 의한 초과 판매를 방지한다. */
