@@ -49,6 +49,10 @@ services:
       # oauth2Login()을 등록하지 않으므로, 구글 로그인 없이도 앱은 정상 기동한다.
       SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      # 이미지 유사도 검색(Bedrock). 자격증명은 코드/컨테이너에 넣지 않고 EC2 인스턴스 프로필(IAM 역할)의
+      # 메타데이터 서비스를 통해 AWS SDK 기본 체인이 자동으로 가져간다.
+      APP_BEDROCK_ENABLED: ${APP_BEDROCK_ENABLED:-false}
+      APP_BEDROCK_REGION: ${APP_BEDROCK_REGION:-us-east-1}
     networks:
       - internal
     expose:
