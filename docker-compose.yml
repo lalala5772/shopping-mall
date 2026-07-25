@@ -45,6 +45,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/shopping_mall?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      # 값은 .env(서버 로컬, git 미포함)로만 주입한다. 비어 있으면 SecurityConfig가 자동으로
+      # oauth2Login()을 등록하지 않으므로, 구글 로그인 없이도 앱은 정상 기동한다.
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
     networks:
       - internal
     expose:

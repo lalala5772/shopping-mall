@@ -20,7 +20,8 @@
                 <a th:href="@{/login}">Login</a>
             </th:block>
             <th:block sec:authorize="isAuthenticated()">
-                <a th:href="@{/mypage/orders}">My Page</a>
+                <!-- 관리자는 고객용 마이페이지/장바구니를 쓸 일이 없어 메뉴 자체를 숨긴다 (접근 차단은 SecurityConfig에서 처리) -->
+                <a th:href="@{/mypage/orders}" sec:authorize="!hasRole('ADMIN')">My Page</a>
                 <th:block sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{/admin/dashboard}">대시보드</a>
                     <a th:href="@{/admin/products}">상품관리</a>
@@ -30,7 +31,7 @@
                     <button type="submit" class="link-button" style="background:none;border:none;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;padding:0;">Logout</button>
                 </form>
             </th:block>
-            <a th:href="@{/cart}" class="icon-link" aria-label="Cart">
+            <a th:href="@{/cart}" class="icon-link" aria-label="Cart" sec:authorize="!hasRole('ADMIN')">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
                 <span class="cart-badge" th:if="${cartCount != null and cartCount > 0}" th:text="${cartCount}">0</span>
             </a>

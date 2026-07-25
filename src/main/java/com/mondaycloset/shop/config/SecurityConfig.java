@@ -48,6 +48,9 @@ public class SecurityConfig {
                 .requestMatchers("/products", "/products/**").permitAll()
                 .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                // 관리자는 고객용 마이페이지/장바구니 대상이 아니므로 URL을 직접 입력해도 접근을 막는다
+                // (네비게이션 메뉴만 숨기는 건 우회 가능하므로 인가 규칙으로도 동일하게 차단).
+                .requestMatchers("/mypage/**", "/cart/**").hasRole("USER")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
