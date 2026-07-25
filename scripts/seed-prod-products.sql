@@ -32,7 +32,7 @@ INSERT INTO product (product_id, category_id, name, price, description, thumbnai
  (10, 5, '울 머플러', 45000, '겨울 필수 울 머플러', 'https://images.unsplash.com/photo-1485527691629-8e370684924c?w=600&h=750&fit=crop&q=80', 35, 'ON_SALE', 0, 0, NOW(), NOW()),
  (11, 2, '오버핏 후드티', 65000, '데일리 오버핏 후드 스웨트셔츠', 'https://images.unsplash.com/photo-1742392133846-a8b416e81661?w=600&h=750&fit=crop&q=80', 55, 'ON_SALE', 0, 0, NOW(), NOW()),
  (12, 1, '퀄팅 롱 패딩', 219000, '방한용 롱 패딩', 'https://images.unsplash.com/photo-1611025504703-8c143abe6996?w=600&h=750&fit=crop&q=80', 15, 'ON_SALE', 0, 0, NOW(), NOW())
-ON DUPLICATE KEY UPDATE name = VALUES(name), thumbnail_url = VALUES(thumbnail_url);
+ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description), thumbnail_url = VALUES(thumbnail_url);
 
 INSERT INTO product_image (product_id, image_url, sort_order) VALUES
  (1, 'https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?w=600&h=750&fit=crop&q=80', 0),
