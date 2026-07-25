@@ -5,8 +5,10 @@
 -- Spring Boot의 sql.init 자동 실행 대상이 아니다(classpath 밖, 파일명도 data.sql이 아님) -
 -- 최초 배포 직후 딱 한 번, 운영자가 직접 mysql 클라이언트로 실행한다.
 --
--- 실행 예:
---   docker compose exec -T mysql mysql -u root -p"$DB_ROOT_PASSWORD" shopping_mall < scripts/seed-prod-products.sql
+-- 실행 예 (--default-character-set=utf8mb4 를 빠뜨리면 한글이 깨져서 저장된다 -
+-- mysql 클라이언트가 접속 시 charset을 명시하지 않으면 latin1로 붙어 UTF-8 바이트를
+-- latin1로 잘못 해석한 뒤 다시 utf8mb4로 인코딩해버리는 이중 인코딩 문제가 생긴다):
+--   docker compose exec -T mysql mysql --default-character-set=utf8mb4 -u root -p"$DB_ROOT_PASSWORD" shopping_mall < scripts/seed-prod-products.sql
 -- ============================================================
 
 INSERT INTO category (category_id, name, display_order) VALUES
