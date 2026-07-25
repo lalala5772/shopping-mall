@@ -46,7 +46,7 @@
                                         th:value="${c.code}" th:text="${c.label}"
                                         th:selected="${order.carrierCode == c.code}">CJ대한통운</option>
                             </select>
-                            <input type="text" name="trackingNumber" placeholder="운송장번호" th:value="${order.trackingNumber}">
+                            <input type="text" name="trackingNumber" placeholder="운송장번호" maxlength="50" th:value="${order.trackingNumber}">
                         </div>
                         <button type="submit" class="btn btn-sm btn-outline">변경 저장</button>
                     </form>

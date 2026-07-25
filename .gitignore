@@ -3,6 +3,9 @@ src/main/resources/application-local.yml
 .env
 .env.local
 
+# Claude Code 세션 설정 (에디터/에이전트 로컬 설정, 저장소에 포함할 필요 없음)
+.claude/
+
 # Gradle
 .gradle/
 build/

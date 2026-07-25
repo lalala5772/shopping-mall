@@ -1,6 +1,7 @@
 package com.mondaycloset.shop.web.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -19,12 +20,15 @@ public class OrderDtos {
     @AllArgsConstructor
     public static class OrderForm {
         @NotBlank(message = "받는 분 성함을 입력해 주세요.")
+        @Size(max = 50, message = "받는 분 성함은 50자를 넘을 수 없습니다.")
         private String receiverName;
 
         @NotBlank(message = "연락처를 입력해 주세요.")
+        @Size(max = 20, message = "연락처는 20자를 넘을 수 없습니다.")
         private String receiverPhone;
 
         @NotBlank(message = "배송지 주소를 입력해 주세요.")
+        @Size(max = 255, message = "배송지 주소는 255자를 넘을 수 없습니다.")
         private String receiverAddress;
     }
 

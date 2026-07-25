@@ -18,6 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AdminOrderService {
 
+    // orders.carrier_code / orders.tracking_number 컬럼 폭(schema.sql)과 반드시 맞춰야 한다 -
+    // 넘는 값을 그냥 저장 시도하면 DB에서 truncation 오류로 죽으면서 상태 변경 자체가 롤백된다.
+    private static final int CARRIER_CODE_MAX_LENGTH = 20;
+    private static final int TRACKING_NUMBER_MAX_LENGTH = 50;
+
     private final OrderRepository orderRepository;
 
     public Page<OrderSummary> getOrderPage(OrderStatus statusFilter, Pageable pageable) {
@@ -43,6 +48,11 @@ public class AdminOrderService {
             OrderService.restoreStock(order);
         }
         if (carrierCode != null && !carrierCode.isBlank() && trackingNumber != null && !trackingNumber.isBlank()) {
+            if (carrierCode.length() > CARRIER_CODE_MAX_LENGTH || trackingNumber.length() > TRACKING_NUMBER_MAX_LENGTH) {
+                throw new BusinessException(ErrorCode.INVALID_INPUT,
+                        String.format("택배사 코드는 %d자, 운송장번호는 %d자를 넘을 수 없습니다.",
+                                CARRIER_CODE_MAX_LENGTH, TRACKING_NUMBER_MAX_LENGTH));
+            }
             order.assignTracking(carrierCode, trackingNumber);
         }
     }

@@ -34,6 +34,12 @@ window.AddressSearch = (function () {
   }
 
   function onMessage(event) {
+    // origin 검증 없이 event.data만 보면, 이 페이지를 열 수 있는 임의의 창이 같은 모양의
+    // 메시지를 보내 주소 입력값을 몰래 바꿔치기할 수 있다(우리 콜백 페이지는 항상 같은 origin이므로
+    // 그 외 origin에서 온 메시지는 전부 무시한다).
+    if (event.origin !== window.location.origin) {
+      return;
+    }
     if (!event.data || event.data.source !== 'juso-address-search' || !config) {
       return;
     }

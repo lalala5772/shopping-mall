@@ -21,6 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberService {
 
+    // member.name/phone/address 컬럼 폭(schema.sql)과 맞춘다 - 넘는 값을 그대로 저장 시도하면
+    // DB truncation 오류로 실패하며 트랜잭션 전체가 롤백된다.
+    private static final int NAME_MAX_LENGTH = 50;
+    private static final int PHONE_MAX_LENGTH = 20;
+    private static final int ADDRESS_MAX_LENGTH = 255;
+
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
     private final PasswordEncoder passwordEncoder;
@@ -82,6 +88,18 @@ public class MemberService {
 
     @Transactional
     public void updateProfile(Long memberId, String name, String phone, String address) {
+        if (name != null && name.length() > NAME_MAX_LENGTH) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT,
+                    String.format("이름은 %d자를 넘을 수 없습니다.", NAME_MAX_LENGTH));
+        }
+        if (phone != null && phone.length() > PHONE_MAX_LENGTH) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT,
+                    String.format("연락처는 %d자를 넘을 수 없습니다.", PHONE_MAX_LENGTH));
+        }
+        if (address != null && address.length() > ADDRESS_MAX_LENGTH) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT,
+                    String.format("주소는 %d자를 넘을 수 없습니다.", ADDRESS_MAX_LENGTH));
+        }
         Member member = findMember(memberId);
         member.changeProfile(name, phone, address);
     }

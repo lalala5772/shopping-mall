@@ -46,6 +46,7 @@ public class MemberDtos {
                 message = "올바른 휴대폰 번호 형식이 아닙니다. (예: 010-1234-5678)")
         private String phone;
 
+        @Size(max = 255, message = "주소는 255자를 넘을 수 없습니다.")
         private String address;
 
         @AssertTrue(message = "이용약관 및 개인정보 수집에 동의해야 가입할 수 있습니다.")
