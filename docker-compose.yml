@@ -53,6 +53,11 @@ services:
       # 메타데이터 서비스를 통해 AWS SDK 기본 체인이 자동으로 가져간다.
       APP_BEDROCK_ENABLED: ${APP_BEDROCK_ENABLED:-false}
       APP_BEDROCK_REGION: ${APP_BEDROCK_REGION:-us-east-1}
+      # 도로명주소 검색 / 스마트택배 배송조회. 로컬은 application-local.yml(gitignore)로
+      # 값이 들어가지만, 그 파일은 서버로 배포되지 않으므로 여기서 별도로 주입해야 한다 -
+      # 안 하면 두 값 다 빈 문자열 기본값이 되어 각 기능이 "키 미설정"으로 조용히 비활성화된다.
+      APP_JUSO_CONFIRM_KEY: ${JUSO_CONFIRM_KEY:-}
+      APP_DELIVERY_TRACKING_API_KEY: ${DELIVERY_TRACKING_API_KEY:-}
     networks:
       - internal
     expose:
