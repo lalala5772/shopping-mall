@@ -2,6 +2,7 @@ package com.mondaycloset.shop.web.controller;
 
 import com.mondaycloset.shop.security.AppUserPrincipal;
 import com.mondaycloset.shop.service.CartService;
+import com.mondaycloset.shop.service.MemberService;
 import com.mondaycloset.shop.service.OrderService;
 import com.mondaycloset.shop.web.dto.OrderDtos.OrderForm;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ public class OrderController {
 
     private final OrderService orderService;
     private final CartService cartService;
+    private final MemberService memberService;
 
     @Value("${app.juso.confirm-key}")
     private String jusoConfirmKey;
@@ -34,6 +36,7 @@ public class OrderController {
             model.addAttribute("orderForm", new OrderForm());
         }
         model.addAttribute("jusoConfirmKey", jusoConfirmKey);
+        model.addAttribute("member", memberService.getMemberInfo(principal.getMemberId()));
         return "order/checkout";
     }
 
@@ -45,6 +48,7 @@ public class OrderController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("cart", cartService.getCart(principal.getMemberId()));
             model.addAttribute("jusoConfirmKey", jusoConfirmKey);
+            model.addAttribute("member", memberService.getMemberInfo(principal.getMemberId()));
             return "order/checkout";
         }
         Long orderId = orderService.placeOrder(principal.getMemberId(), form);
