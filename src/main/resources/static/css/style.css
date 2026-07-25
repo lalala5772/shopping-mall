@@ -530,6 +530,68 @@ img { max-width: 100%; display: block; }
   margin-top: 0.3rem;
 }
 
+/* ---------- 실시간 유효성 검증 ---------- */
+.field-hint {
+  font-size: 0.75rem;
+  margin-top: 0.3rem;
+  min-height: 1em;
+}
+
+.field-hint--error {
+  color: var(--color-danger);
+}
+
+.field-hint--ok::before {
+  content: "✓ ";
+}
+
+.field-hint--ok {
+  color: var(--color-success);
+}
+
+.form-group input.input--invalid {
+  border-color: var(--color-danger);
+}
+
+.form-group input.input--valid {
+  border-color: var(--color-success);
+}
+
+/* ---------- 이메일 로컬파트 + 도메인 select/직접입력 ---------- */
+.email-combo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.email-combo input,
+.email-combo select {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--color-gray-border);
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.email-combo__at {
+  color: var(--color-gray-text);
+  flex-shrink: 0;
+}
+
+.email-combo #emailLocal {
+  flex: 1 1 100px;
+  min-width: 0;
+}
+
+.email-combo #emailDomainSelect {
+  flex: 1 1 120px;
+  min-width: 0;
+}
+
+.email-combo__custom {
+  flex: 1 1 100%;
+}
+
 .form-footer-link {
   text-align: center;
   margin-top: var(--space-3);
@@ -657,6 +719,66 @@ img { max-width: 100%; display: block; }
 .data-table td.num, .data-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .data-table td.actions { display: flex; gap: 0.4rem; flex-wrap: wrap; white-space: normal; }
 .data-table td.actions form { display: inline-flex; gap: 0.4rem; }
+
+/* ---------- 관리자 주문 상태변경 폼 ---------- */
+.data-table td.order-status-cell,
+.data-table td.order-cancel-cell {
+  white-space: normal;
+  vertical-align: top;
+}
+
+.order-status-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 240px;
+  padding: 0.6rem;
+  background: var(--color-gray-bg);
+  border: 1px solid var(--color-gray-border);
+}
+
+.order-status-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.order-status-form__field label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-gray-text);
+}
+
+.order-status-form select,
+.order-status-form input[type="text"] {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--color-gray-border);
+  font-size: 0.82rem;
+  font-family: inherit;
+  background: var(--color-white);
+  width: 100%;
+}
+
+.order-status-form__tracking {
+  display: flex;
+  gap: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed var(--color-gray-border);
+}
+
+.order-status-form__tracking[hidden] {
+  display: none;
+}
+
+.order-status-form__field--grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.order-status-form .btn {
+  align-self: flex-start;
+}
 
 .status-badge.on_sale { border-color: var(--color-success); color: var(--color-success); }
 .status-badge.sold_out { border-color: var(--color-danger); color: var(--color-danger); }

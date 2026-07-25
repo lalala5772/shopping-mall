@@ -31,27 +31,36 @@
                 <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01</td>
                 <td class="num" th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')} + '원'">0원</td>
                 <td><span class="status-badge" th:classappend="${#strings.toLowerCase(order.status)}" th:text="${order.statusLabel}">상태</span></td>
-                <td class="actions">
-                    <form th:action="@{/admin/orders/{id}/status(id=${order.orderId})}" method="post" style="display:flex; flex-direction:column; gap:0.3rem; min-width:220px;">
-                        <select name="next">
-                            <option value="ORDERED" th:selected="${order.status == 'ORDERED'}">주문완료</option>
-                            <option value="SHIPPING" th:selected="${order.status == 'SHIPPING'}">배송중</option>
-                            <option value="DELIVERED" th:selected="${order.status == 'DELIVERED'}">배송완료</option>
-                            <option value="CANCELLED" th:selected="${order.status == 'CANCELLED'}">주문취소</option>
-                        </select>
-                        <div style="display:flex; gap:0.3rem;">
-                            <select name="carrierCode" style="width:auto;">
-                                <option value="">택배사</option>
-                                <option th:each="c : ${T(com.mondaycloset.shop.domain.order.Carrier).values()}"
-                                        th:value="${c.code}" th:text="${c.label}"
-                                        th:selected="${order.carrierCode == c.code}">CJ대한통운</option>
+                <td class="order-status-cell">
+                    <form class="order-status-form" th:action="@{/admin/orders/{id}/status(id=${order.orderId})}" method="post">
+                        <div class="order-status-form__field">
+                            <label>상태</label>
+                            <select name="next" class="order-status-next">
+                                <option value="ORDERED" th:selected="${order.status == 'ORDERED'}">주문완료</option>
+                                <option value="SHIPPING" th:selected="${order.status == 'SHIPPING'}">배송중</option>
+                                <option value="DELIVERED" th:selected="${order.status == 'DELIVERED'}">배송완료</option>
+                                <option value="CANCELLED" th:selected="${order.status == 'CANCELLED'}">주문취소</option>
                             </select>
-                            <input type="text" name="trackingNumber" placeholder="운송장번호" maxlength="50" th:value="${order.trackingNumber}">
                         </div>
-                        <button type="submit" class="btn btn-sm btn-outline">변경 저장</button>
+                        <div class="order-status-form__tracking">
+                            <div class="order-status-form__field">
+                                <label>택배사</label>
+                                <select name="carrierCode">
+                                    <option value="">선택</option>
+                                    <option th:each="c : ${T(com.mondaycloset.shop.domain.order.Carrier).values()}"
+                                            th:value="${c.code}" th:text="${c.label}"
+                                            th:selected="${order.carrierCode == c.code}">CJ대한통운</option>
+                                </select>
+                            </div>
+                            <div class="order-status-form__field order-status-form__field--grow">
+                                <label>운송장번호</label>
+                                <input type="text" name="trackingNumber" placeholder="운송장번호 입력" maxlength="50" th:value="${order.trackingNumber}">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-sm">변경 저장</button>
                     </form>
                 </td>
-                <td class="actions">
+                <td class="order-cancel-cell">
                     <form th:if="${order.status == 'ORDERED'}" th:action="@{/admin/orders/{id}/status(id=${order.orderId})}" method="post"
                           onsubmit="return confirm('이 주문을 취소할까요? 재고가 자동으로 복원됩니다.');">
                         <input type="hidden" name="next" value="CANCELLED">
@@ -62,6 +71,8 @@
             </tbody>
         </table>
     </div>
+
+    <script th:src="@{/js/admin-order-status.js}"></script>
 
     <div class="pagination" th:if="${totalPages > 1}">
         <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
