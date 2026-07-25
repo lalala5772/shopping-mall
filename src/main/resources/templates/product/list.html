@@ -23,14 +23,27 @@
             <button type="submit" class="btn btn-sm btn-outline">검색</button>
         </form>
 
-        <form th:if="${imageSearchEnabled}" th:action="@{/products/search/image}" method="post"
-              enctype="multipart/form-data" class="search-form" style="gap:0.4rem;">
-            <input type="file" name="image" accept="image/*" required style="max-width:180px;">
-            <button type="submit" class="btn btn-sm btn-outline">이미지로 검색</button>
+        <form th:if="${imageSearchEnabled}" id="imageSearchForm" th:action="@{/products/search/image}" method="post"
+              enctype="multipart/form-data" class="image-search">
+            <input type="file" name="image" id="imageSearchInput" accept="image/*" hidden>
+            <button type="button" id="imageSearchTrigger" class="image-search-trigger"
+                    title="이미지로 검색" aria-label="이미지로 검색">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h1.8l1-1.6a1 1 0 0 1 .85-.4h5.7a1 1 0 0 1 .85.4l1 1.6h1.8A1.5 1.5 0 0 1 20 7.5v10A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-10Z"/>
+                    <circle cx="12" cy="12.5" r="3.4"/>
+                </svg>
+            </button>
+            <div id="imageSearchPreview" class="image-search-preview" hidden>
+                <img id="imageSearchThumb" alt="선택한 이미지 미리보기">
+                <span id="imageSearchFilename"></span>
+                <button type="button" id="imageSearchClear" aria-label="선택 취소">×</button>
+            </div>
+            <span id="imageSearchError" class="image-search-error" hidden></span>
         </form>
     </div>
 
-    <div th:if="${imageSearchActive}" class="alert" style="background:#f2f2f2; color:#333;">
+    <div th:if="${imageSearchActive}" class="alert image-search-result-banner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h1.8l1-1.6a1 1 0 0 1 .85-.4h5.7a1 1 0 0 1 .85.4l1 1.6h1.8A1.5 1.5 0 0 1 20 7.5v10A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5v-10Z"/><circle cx="12" cy="12.5" r="3.4"/></svg>
         업로드한 이미지와 유사한 상품 결과입니다. <a th:href="@{/products}">전체 상품 보기</a>
     </div>
 
@@ -58,6 +71,7 @@
            th:classappend="${i == currentPage} ? 'active'">1</a>
     </div>
 
+    <script th:if="${imageSearchEnabled}" th:src="@{/js/image-search.js}"></script>
 </div>
 </body>
 </html>
