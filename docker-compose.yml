@@ -5,6 +5,11 @@ services:
     image: mysql:8.0
     container_name: shop-mysql
     restart: unless-stopped
+    # 프리티어(RAM 1GB급) 인스턴스에서 mysql/app/nginx가 한 호스트에 같이 뜨기 때문에
+    # 컨테이너별 메모리 상한을 걸어둔다 - 상한이 없으면 컨테이너 하나가 폭주할 때
+    # 호스트 전체가 스와핑/OOM으로 응답 불능에 빠질 수 있다.
+    mem_limit: 320m
+    command: --performance-schema=OFF --innodb-buffer-pool-size=96M
     environment:
       MYSQL_DATABASE: shopping_mall
       MYSQL_USER: ${DB_USER}
@@ -25,9 +30,13 @@ services:
       retries: 5
 
   app:
-    image: ghcr.io/lalala5772/shopping-mall:latest
+    # 아직 이미지 레지스트리 파이프라인이 없어 저장소의 Dockerfile로 서버에서 직접 빌드한다.
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: shop-app
     restart: unless-stopped
+    mem_limit: 380m
     depends_on:
       mysql:
         condition: service_healthy
@@ -45,6 +54,7 @@ services:
     image: nginx:1.27-alpine
     container_name: shop-nginx
     restart: unless-stopped
+    mem_limit: 60m
     depends_on:
       - app
     ports:
