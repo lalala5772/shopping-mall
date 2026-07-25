@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head><title>Shop</title></head>
+<body>
+<div layout:fragment="content">
+
+    <div class="page-header">
+        <h1>Shop</h1>
+    </div>
+
+    <div class="filter-bar">
+        <a th:href="@{/products}" class="filter-chip" th:classappend="${selectedCategory == null} ? ' active'">전체</a>
+        <a th:each="category : ${categories}"
+           th:href="@{/products(category=${category.id})}"
+           class="filter-chip"
+           th:classappend="${selectedCategory != null and selectedCategory == category.id} ? ' active'"
+           th:text="${category.name}">카테고리</a>
+
+        <form th:action="@{/products}" method="get" class="search-form">
+            <input type="text" name="keyword" th:value="${keyword}" placeholder="상품명 검색">
+            <button type="submit" class="btn btn-sm btn-outline">검색</button>
+        </form>
+    </div>
+
+    <div th:if="${#lists.isEmpty(products)}" class="empty-state">조건에 맞는 상품이 없습니다.</div>
+
+    <div class="product-grid" th:unless="${#lists.isEmpty(products)}">
+        <a th:each="product : ${products}" th:href="@{/products/{id}(id=${product.id})}" style="color:inherit;">
+            <div class="product-card">
+                <div class="product-card__image-wrap">
+                    <span th:if="${product.soldOut}" class="badge-soldout">SOLD OUT</span>
+                    <img th:src="${product.thumbnailUrl}" th:alt="${product.name}">
+                </div>
+                <div class="product-card__info">
+                    <p class="product-card__name" th:text="${product.name}">상품명</p>
+                    <p class="product-card__price" th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')} + '원'">0원</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="pagination" th:if="${totalPages > 1}">
+        <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+           th:href="@{/products(page=${i}, category=${selectedCategory}, keyword=${keyword})}"
+           th:text="${i + 1}"
+           th:classappend="${i == currentPage} ? 'active'">1</a>
+    </div>
+
+</div>
+</body>
+</html>

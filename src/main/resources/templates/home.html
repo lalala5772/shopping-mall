@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head><title>Home</title></head>
+<body>
+<div layout:fragment="content">
+
+    <section class="hero">
+        <h1>New Season, New Closet.<br>이번 주 신상 12종을 만나보세요.</h1>
+        <a th:href="@{/products}" class="btn">Shop Now</a>
+    </section>
+
+    <div class="section-title">
+        <h2>New Arrivals</h2>
+        <a th:href="@{/products}" class="muted" style="font-size:0.85rem;">전체보기 &rarr;</a>
+    </div>
+
+    <div class="product-grid">
+        <a th:each="product : ${products}" th:href="@{/products/{id}(id=${product.id})}" style="color:inherit;">
+            <div class="product-card">
+                <div class="product-card__image-wrap">
+                    <span th:if="${product.soldOut}" class="badge-soldout">SOLD OUT</span>
+                    <img th:src="${product.thumbnailUrl}" th:alt="${product.name}">
+                </div>
+                <div class="product-card__info">
+                    <p class="product-card__name" th:text="${product.name}">상품명</p>
+                    <p class="product-card__price" th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')} + '원'">0원</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+</div>
+</body>
+</html>

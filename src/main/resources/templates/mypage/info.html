@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head><title>회원정보</title></head>
+<body>
+<div layout:fragment="content">
+
+    <div class="form-page">
+        <h1>My Info</h1>
+
+        <form th:action="@{/mypage/info}" method="post">
+            <div class="form-group">
+                <label>이메일</label>
+                <input type="email" th:value="${member.email}" disabled>
+            </div>
+            <div class="form-group">
+                <label for="name">이름</label>
+                <input type="text" id="name" name="name" th:value="${member.name}" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">연락처</label>
+                <input type="text" id="phone" name="phone" th:value="${member.phone}">
+            </div>
+            <div class="form-group">
+                <label for="roadAddr">주소</label>
+                <div style="display:flex; gap:0.5rem;">
+                    <input type="text" id="roadAddr" readonly placeholder="주소 검색 버튼을 눌러주세요">
+                    <button type="button" class="btn btn-outline btn-sm" style="white-space:nowrap;" onclick="AddressSearch.open()">주소 검색</button>
+                </div>
+                <input type="text" id="detailAddr" placeholder="상세주소 (동/호수 등)" style="margin-top:0.5rem;">
+                <input type="hidden" id="zipcode">
+                <input type="hidden" id="address" name="address" th:value="${member.address}">
+            </div>
+            <button type="submit" class="btn btn-block">저장</button>
+        </form>
+    </div>
+
+    <script th:src="@{/js/address-search.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var __initialAddress = /*[[${member.address}]]*/ '';
+        document.getElementById('roadAddr').value = __initialAddress || '';
+        AddressSearch.init({
+            confirmKey: /*[[${jusoConfirmKey}]]*/ '',
+            zipcodeInputId: 'zipcode',
+            roadAddrInputId: 'roadAddr',
+            detailAddrInputId: 'detailAddr',
+            targetInputId: 'address'
+        });
+        /*]]>*/
+    </script>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/layout}">
+<head><title th:text="${product.name}">상품 상세</title></head>
+<body>
+<div layout:fragment="content">
+
+    <div class="product-detail">
+        <div>
+            <div class="product-detail__gallery-main">
+                <img th:src="${product.images[0]}" th:alt="${product.name}" id="mainImage">
+            </div>
+            <div class="product-detail__thumbs" th:if="${product.images.size() > 1}">
+                <img th:each="img, iter : ${product.images}"
+                     th:src="${img}"
+                     th:classappend="${iter.index == 0} ? 'active'"
+                     onclick="document.getElementById('mainImage').src = this.src;
+                              document.querySelectorAll('.product-detail__thumbs img').forEach(function(el){el.classList.remove('active')});
+                              this.classList.add('active');">
+            </div>
+        </div>
+
+        <div>
+            <p class="product-detail__category" th:text="${product.categoryName}">카테고리</p>
+            <h1 class="product-detail__name" th:text="${product.name}">상품명</h1>
+            <p class="product-detail__price" th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')} + '원'">0원</p>
+            <p class="product-detail__desc" th:text="${product.description}">상품 설명</p>
+
+            <p class="stock-info" th:if="${product.purchasable}" th:text="'재고 ' + ${product.stockQuantity} + '개'">재고</p>
+            <p class="stock-info" th:unless="${product.purchasable}" style="color:var(--color-danger);">품절된 상품입니다.</p>
+
+            <div sec:authorize="isAuthenticated()">
+                <form th:if="${product.purchasable}" th:action="@{/cart/items}" method="post">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+                    <div class="qty-selector">
+                        <label for="quantity" class="mt-0">수량</label>
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" th:max="${product.stockQuantity}">
+                    </div>
+                    <button type="submit" class="btn btn-block">장바구니 담기</button>
+                </form>
+            </div>
+            <div sec:authorize="!isAuthenticated()">
+                <p class="muted" style="margin-bottom:var(--space-2);">로그인 후 장바구니에 담을 수 있습니다.</p>
+                <a th:href="@{/login}" class="btn btn-block">로그인하기</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

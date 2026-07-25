@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head><title>접근 권한 없음</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="empty-state">
+        <h1 style="font-family:var(--font-serif);">403</h1>
+        <p>이 페이지에 접근할 권한이 없습니다.</p>
+        <a th:href="@{/}" class="btn btn-outline">홈으로</a>
+    </div>
+</div>
+</body>
+</html>

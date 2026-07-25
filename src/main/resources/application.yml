@@ -1,0 +1,97 @@
+spring:
+  application:
+    name: miro-closet
+
+  profiles:
+    active: local
+
+  thymeleaf:
+    cache: false
+    encoding: UTF-8
+
+  jpa:
+    hibernate:
+      ddl-auto: none        # 스키마는 schema.sql이 단일 소스(source of truth)로 관리
+    open-in-view: false      # OSIV 비활성화: 트랜잭션 경계를 Service 계층으로 강제
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enforce: true
+
+logging:
+  level:
+    root: INFO
+    com.mondaycloset.shop: DEBUG
+    org.hibernate.SQL: DEBUG
+
+app:
+  upload-dir: ./uploads
+  juso:
+    # 도로명주소 API(행정안전부, business.juso.go.kr) 승인키. 기본값은 빈 문자열 -
+    # 키가 없으면 주소검색 버튼이 "키 미설정" 안내만 하고 조용히 무력화된다(앱 기동 자체는 막지 않음).
+    confirm-key: ""
+  delivery-tracking:
+    # 스마트택배(SmartParcel/Sweettracker) 배송조회 API 키. 마찬가지로 없으면 배송조회 기능만 비활성화.
+    api-key: ""
+
+---
+# 로컬 개발 프로필: docker-compose의 mysql 컨테이너(로컬 포트 3306) 또는 로컬 설치 MySQL 사용
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:mysql://localhost:3306/shopping_mall?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: shop_user
+    password: shop_pass1234!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+      # 시드 데이터(데모 admin/user 계정, 알려진 비밀번호)는 local 프로필에서만 적재한다.
+      # 파일명을 data.sql이 아닌 local-seed-data.sql로 둔 것도 같은 이유 - prod 프로필은
+      # 이 설정이 없으므로 스키마(schema.sql)만 적용되고 데모 계정은 절대 생성되지 않는다.
+      data-locations: classpath:local-seed-data.sql
+
+---
+# 운영(EC2) 프로필: 값은 docker-compose 환경변수로 주입, 절대 코드/리포지토리에 커밋하지 않는다
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      # schema.sql(CREATE TABLE IF NOT EXISTS - 멱등)만 적용한다.
+      # local-seed-data.sql은 여기서 참조하지 않으므로 데모 admin 계정이 운영 DB에 절대 생성되지 않는다.
+      mode: always
+      encoding: UTF-8
+
+server:
+  # nginx가 TLS를 종료하고 X-Forwarded-* 헤더로 넘겨주는 원 요청 정보(https, 실도메인)를
+  # 신뢰하도록 설정. 이게 없으면 request.getScheme()/getServerName() 등이 컨테이너 내부 값
+  # (http, app:8080)으로 보여 same-origin 검증, 보안 쿠키(secure) 판단 등이 어긋난다.
+  forward-headers-strategy: framework
+
+logging:
+  level:
+    root: INFO
+    com.mondaycloset.shop: INFO
+    org.hibernate.SQL: WARN

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head><title>주문 상세</title></head>
+<body>
+<div layout:fragment="content">
+
+    <div class="page-header">
+        <h1 th:text="${order.orderNumber}">ORD-0000</h1>
+        <span class="status-badge" th:classappend="${#strings.toLowerCase(order.status)}" th:text="${order.statusLabel}">상태</span>
+    </div>
+
+    <table class="cart-table">
+        <thead><tr><th>상품</th><th>단가</th><th>수량</th><th>합계</th></tr></thead>
+        <tbody>
+        <tr th:each="item : ${order.items}">
+            <td th:text="${item.productName}">상품명</td>
+            <td th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')} + '원'">0원</td>
+            <td th:text="${item.quantity}">1</td>
+            <td th:text="${#numbers.formatInteger(item.totalPrice, 0, 'COMMA')} + '원'">0원</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="cart-summary">
+        <span>총 결제금액</span>
+        <strong th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')} + '원'">0원</strong>
+    </div>
+
+    <p><strong>배송지</strong><br>
+        <span th:text="${order.receiverName}">수령인</span> /
+        <span th:text="${order.receiverPhone}">연락처</span><br>
+        <span th:text="${order.receiverAddress}">주소</span>
+    </p>
+
+    <div th:if="${order.trackingNumber != null}" style="margin-bottom:var(--space-3);">
+        <strong>배송 조회</strong><br>
+        <span th:text="${T(com.mondaycloset.shop.domain.order.Carrier).labelOf(order.carrierCode)}">택배사</span> /
+        <span th:text="${order.trackingNumber}">운송장번호</span>
+        <div th:if="${tracking != null}" class="muted" style="margin-top:0.3rem; font-size:0.85rem;">
+            <span th:text="${tracking.msg}">배송 상태</span>
+        </div>
+        <div th:if="${tracking == null}" class="muted" style="margin-top:0.3rem; font-size:0.85rem;">
+            실시간 배송 상태를 지금은 불러올 수 없습니다.
+        </div>
+    </div>
+
+    <div style="display:flex; gap:0.6rem;">
+        <a th:href="@{/mypage/orders}" class="btn btn-outline">목록으로</a>
+        <form th:if="${order.status == 'ORDERED'}" th:action="@{/mypage/orders/{id}/cancel(id=${order.orderId})}" method="post"
+              onsubmit="return confirm('주문을 취소할까요? 취소 후에는 되돌릴 수 없습니다.');">
+            <button type="submit" class="btn btn-danger">주문 취소</button>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

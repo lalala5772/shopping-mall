@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head><title>장바구니</title></head>
+<body>
+<div layout:fragment="content">
+
+    <div class="page-header">
+        <h1>Cart <span class="count-badge" th:text="${#lists.size(cart.items)}">0</span></h1>
+    </div>
+
+    <div th:if="${#lists.isEmpty(cart.items)}" class="empty-state">
+        <p class="empty-state__title">장바구니에 담긴 상품이 없어요</p>
+        <p class="empty-state__desc">원하는 상품을 담아보세요!</p>
+        <a th:href="@{/products}" class="btn">상품 둘러보기</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(cart.items)}">
+        <table class="cart-table">
+            <thead>
+            <tr>
+                <th>상품</th>
+                <th>단가</th>
+                <th>수량</th>
+                <th>합계</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${cart.items}">
+                <td>
+                    <div class="cart-product-cell">
+                        <img th:src="${item.thumbnailUrl}" th:alt="${item.productName}">
+                        <div>
+                            <div th:text="${item.productName}">상품명</div>
+                            <div th:unless="${item.purchasable}" style="color:var(--color-danger); font-size:0.75rem;">품절/판매중지된 상품입니다</div>
+                        </div>
+                    </div>
+                </td>
+                <td th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')} + '원'">0원</td>
+                <td>
+                    <form th:action="@{/cart/items/quantity}" method="post" style="display:flex; gap:0.4rem;">
+                        <input type="hidden" name="cartItemId" th:value="${item.cartItemId}">
+                        <input type="number" name="quantity" th:value="${item.quantity}" min="1" style="width:60px; padding:0.3rem;">
+                        <button type="submit" class="btn btn-sm btn-outline">변경</button>
+                    </form>
+                </td>
+                <td th:text="${#numbers.formatInteger(item.totalPrice, 0, 'COMMA')} + '원'">0원</td>
+                <td>
+                    <form th:action="@{/cart/items/{id}/delete(id=${item.cartItemId})}" method="post">
+                        <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <span>합계</span>
+            <strong th:text="${#numbers.formatInteger(cart.totalPrice, 0, 'COMMA')} + '원'">0원</strong>
+        </div>
+
+        <a th:href="@{/orders/checkout}" class="btn btn-block">주문하기</a>
+    </div>
+
+</div>
+</body>
+</html>

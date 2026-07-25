@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head><title>주문 내역</title></head>
+<body>
+<div layout:fragment="content">
+
+    <div class="page-header">
+        <h1>My Orders</h1>
+        <a th:href="@{/mypage/info}" class="muted" style="font-size:0.85rem;">회원정보 &rarr;</a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="empty-state">주문 내역이 없습니다.</div>
+
+    <div class="data-table-wrap" th:unless="${#lists.isEmpty(orders)}">
+        <table class="data-table">
+            <thead>
+            <tr><th>주문번호</th><th>주문일시</th><th>상태</th><th class="num">금액</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.orderNumber}">ORD-0000</td>
+                <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01</td>
+                <td><span class="status-badge" th:classappend="${#strings.toLowerCase(order.status)}" th:text="${order.statusLabel}">상태</span></td>
+                <td class="num" th:text="${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')} + '원'">0원</td>
+                <td class="actions">
+                    <a th:href="@{/mypage/orders/{id}(id=${order.orderId})}" class="btn btn-sm btn-outline">상세보기</a>
+                    <form th:if="${order.status == 'ORDERED'}" th:action="@{/mypage/orders/{id}/cancel(id=${order.orderId})}" method="post"
+                          onsubmit="return confirm('주문을 취소할까요? 취소 후에는 되돌릴 수 없습니다.');">
+                        <button type="submit" class="btn btn-sm btn-danger">취소</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" th:if="${totalPages > 1}">
+        <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+           th:href="@{/mypage/orders(page=${i})}"
+           th:text="${i + 1}"
+           th:classappend="${i == currentPage} ? 'active'">1</a>
+    </div>
+
+</div>
+</body>
+</html>

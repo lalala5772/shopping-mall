@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head><title>주문서 작성</title></head>
+<body>
+<div layout:fragment="content">
+
+    <div class="page-header">
+        <h1>Checkout</h1>
+    </div>
+
+    <table class="cart-table">
+        <thead>
+        <tr><th>상품</th><th>수량</th><th>합계</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${cart.items}">
+            <td th:text="${item.productName}">상품명</td>
+            <td th:text="${item.quantity}">1</td>
+            <td th:text="${#numbers.formatInteger(item.totalPrice, 0, 'COMMA')} + '원'">0원</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="cart-summary">
+        <span>총 결제금액</span>
+        <strong th:text="${#numbers.formatInteger(cart.totalPrice, 0, 'COMMA')} + '원'">0원</strong>
+    </div>
+
+    <form th:action="@{/orders}" th:object="${orderForm}" method="post" class="form-page" style="margin-top:var(--space-4);">
+        <div class="form-group">
+            <label for="receiverName">받는 분</label>
+            <input type="text" id="receiverName" th:field="*{receiverName}">
+            <div class="field-error" th:if="${#fields.hasErrors('receiverName')}" th:errors="*{receiverName}">error</div>
+        </div>
+        <div class="form-group">
+            <label for="receiverPhone">연락처</label>
+            <input type="text" id="receiverPhone" th:field="*{receiverPhone}" placeholder="010-0000-0000">
+            <div class="field-error" th:if="${#fields.hasErrors('receiverPhone')}" th:errors="*{receiverPhone}">error</div>
+        </div>
+        <div class="form-group">
+            <label for="roadAddr">배송지 주소</label>
+            <div style="display:flex; gap:0.5rem;">
+                <input type="text" id="roadAddr" readonly placeholder="주소 검색 버튼을 눌러주세요">
+                <button type="button" class="btn btn-outline btn-sm" style="white-space:nowrap;" onclick="AddressSearch.open()">주소 검색</button>
+            </div>
+            <input type="text" id="detailAddr" placeholder="상세주소 (동/호수 등)" style="margin-top:0.5rem;">
+            <input type="hidden" id="zipcode">
+            <input type="hidden" id="receiverAddress" th:field="*{receiverAddress}">
+            <div class="field-error" th:if="${#fields.hasErrors('receiverAddress')}" th:errors="*{receiverAddress}">error</div>
+        </div>
+        <button type="submit" class="btn btn-block">결제하기</button>
+    </form>
+
+    <script th:src="@{/js/address-search.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // 유효성 검사 실패로 이 페이지가 다시 렌더링된 경우, 서버는 receiverAddress(합쳐진 문자열)를
+        // 그대로 들고 있지만 화면의 roadAddr/detailAddr 입력창은 바인딩된 필드가 아니라서 비어 보인다.
+        // 이전에 입력했던 전체 주소를 기본주소 칸에 다시 채워 최소한 값이 사라지지 않게 한다.
+        var __prevAddress = /*[[${orderForm.receiverAddress}]]*/ '';
+        if (__prevAddress) {
+            document.getElementById('roadAddr').value = __prevAddress;
+        }
+        AddressSearch.init({
+            confirmKey: /*[[${jusoConfirmKey}]]*/ '',
+            zipcodeInputId: 'zipcode',
+            roadAddrInputId: 'roadAddr',
+            detailAddrInputId: 'detailAddr',
+            targetInputId: 'receiverAddress'
+        });
+        /*]]>*/
+    </script>
+
+</div>
+</body>
+</html>

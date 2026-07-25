@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head><title>회원가입</title></head>
+<body>
+<div layout:fragment="content">
+
+    <div class="form-page">
+        <h1>Join</h1>
+
+        <form th:action="@{/members/register}" th:object="${registerRequest}" method="post">
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <input type="email" id="email" th:field="*{email}">
+                <div class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">error</div>
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호 (영문+숫자 포함 8자 이상)</label>
+                <input type="password" id="password" th:field="*{password}">
+                <div class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">error</div>
+            </div>
+            <div class="form-group">
+                <label for="passwordConfirm">비밀번호 확인</label>
+                <input type="password" id="passwordConfirm" th:field="*{passwordConfirm}">
+                <div class="field-error" th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}">error</div>
+                <div class="field-error" th:if="${#fields.hasErrors('passwordConfirmed')}" th:errors="*{passwordConfirmed}">error</div>
+            </div>
+            <div class="form-group">
+                <label for="name">이름</label>
+                <input type="text" id="name" th:field="*{name}">
+                <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">error</div>
+            </div>
+            <div class="form-group">
+                <label for="phone">연락처</label>
+                <input type="text" id="phone" th:field="*{phone}" placeholder="010-0000-0000">
+                <div class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">error</div>
+            </div>
+            <div class="form-group">
+                <label for="roadAddr">주소</label>
+                <div style="display:flex; gap:0.5rem;">
+                    <input type="text" id="roadAddr" readonly placeholder="주소 검색 버튼을 눌러주세요">
+                    <button type="button" class="btn btn-outline btn-sm" style="white-space:nowrap;" onclick="AddressSearch.open()">주소 검색</button>
+                </div>
+                <input type="text" id="detailAddr" placeholder="상세주소 (동/호수 등)" style="margin-top:0.5rem;">
+                <input type="hidden" id="zipcode">
+                <input type="hidden" id="address" th:field="*{address}">
+            </div>
+            <div class="form-group">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="agreeTerms" th:field="*{agreeTerms}" style="width:auto;">
+                    <span>(필수) 이용약관 및 개인정보 수집·이용에 동의합니다.</span>
+                </label>
+                <div class="field-error" th:if="${#fields.hasErrors('agreeTerms')}" th:errors="*{agreeTerms}">error</div>
+            </div>
+            <button type="submit" class="btn btn-block">가입하기</button>
+        </form>
+
+        <p class="form-footer-link">
+            이미 계정이 있으신가요? <a th:href="@{/login}">로그인</a>
+        </p>
+    </div>
+
+    <script th:src="@{/js/address-search.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // 유효성 검사 실패로 이 페이지가 다시 렌더링된 경우 서버는 address 값을 그대로 들고 있지만
+        // roadAddr/detailAddr는 바인딩된 필드가 아니라서 비어 보인다. 이전 값을 다시 채워준다.
+        var __prevAddress = /*[[${registerRequest.address}]]*/ '';
+        if (__prevAddress) {
+            document.getElementById('roadAddr').value = __prevAddress;
+        }
+        AddressSearch.init({
+            confirmKey: /*[[${jusoConfirmKey}]]*/ '',
+            zipcodeInputId: 'zipcode',
+            roadAddrInputId: 'roadAddr',
+            detailAddrInputId: 'detailAddr',
+            targetInputId: 'address'
+        });
+        /*]]>*/
+    </script>
+
+</div>
+</body>
+</html>
