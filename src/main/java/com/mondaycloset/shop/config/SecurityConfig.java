@@ -4,6 +4,7 @@ import com.mondaycloset.shop.security.CustomOAuth2UserService;
 import com.mondaycloset.shop.security.LoginFailureHandler;
 import com.mondaycloset.shop.security.LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,6 +27,12 @@ public class SecurityConfig {
     private final LoginSuccessHandler loginSuccessHandler;
     private final LoginFailureHandler loginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
+
+    // 구글 OAuth2 클라이언트 설정이 없는 환경(client-id 미설정)에서는 oauth2Login()을 등록하지 않는다.
+    // 등록해버리면 Spring Security가 ClientRegistrationRepository 빈을 요구하게 되어
+    // 그 빈이 없을 때 애플리케이션 컨텍스트 자체가 뜨지 못한다(폼 로그인까지 함께 막힘).
+    @Value("${spring.security.oauth2.client.registration.google.client-id:}")
+    private String googleClientId;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -51,12 +58,17 @@ public class SecurityConfig {
                 .successHandler(loginSuccessHandler)
                 .failureHandler(loginFailureHandler)
                 .permitAll()
-            )
-            .oauth2Login(oauth2 -> oauth2
+            );
+
+        if (!googleClientId.isBlank()) {
+            http.oauth2Login(oauth2 -> oauth2
                 .loginPage("/login")
                 .userInfoEndpoint(userInfo -> userInfo.oidcUserService(customOAuth2UserService))
                 .successHandler(loginSuccessHandler)
-            )
+            );
+        }
+
+        http
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")

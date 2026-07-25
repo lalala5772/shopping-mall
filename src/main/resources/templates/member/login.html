@@ -23,13 +23,15 @@
             <button type="submit" class="btn btn-block">로그인</button>
         </form>
 
-        <div class="oauth-divider"><span>또는</span></div>
-        <a th:href="@{/oauth2/authorization/google}" class="btn btn-outline btn-block">Google로 로그인</a>
+        <div th:if="${googleLoginEnabled}">
+            <div class="oauth-divider"><span>또는</span></div>
+            <a th:href="@{/oauth2/authorization/google}" class="btn btn-outline btn-block">Google로 로그인</a>
+        </div>
 
         <p class="form-footer-link">
             아직 회원이 아니신가요? <a th:href="@{/members/register}">회원가입</a>
         </p>
-        <p class="form-footer-link muted" style="font-size:0.75rem;">
+        <p class="form-footer-link muted" style="font-size:0.75rem;" th:if="${showDemoHint}">
             관리자 데모 계정: admin@mirocloset.com / admin1234!
         </p>
     </div>
